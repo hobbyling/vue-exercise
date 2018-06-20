@@ -192,7 +192,6 @@
                         },
 
                         created() {
-
                             this.localStorageRecord();
                             this.getData();
                         },
@@ -209,6 +208,8 @@
                                     const staredLen = vm.stared.length;
                                     console.log(staredLen);
 
+
+                                    //將data中，關注區域的chosen改為true
                                     if (staredLen != 0) {
                                         for (let i = 0; i < dataLen; i++) {
                                             for (let j = 0; j < staredLen; j++) {
@@ -243,7 +244,7 @@
                                     }
                                 }
 
-                                if (key == -1) {
+                                if (key == -1) { //如果沒有在stared中
                                     vm.stared.push(chooseCard);
                                     vm.stared[staredLength].chosen = true;
 
@@ -254,8 +255,7 @@
                                             vm.data[i].chosen = true;
                                         }
                                     }
-
-                                } else {
+                                } else {  //如果已在stared中
                                     vm.stared.splice(key, 1);
 
                                     const dataLen = vm.data.length;
@@ -267,6 +267,7 @@
                                     }
                                 }
 
+                                //將stared寫入localstorage
                                 let staredString = JSON.stringify(vm.stared);
                                 localStorage.setItem('staredItem', staredString);
                             },
