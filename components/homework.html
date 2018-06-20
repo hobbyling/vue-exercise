@@ -154,7 +154,7 @@
                 <script type="text/x-template" id="cardComponentTemplate">
                     <div class="card" :class="{'status-aqi2': info.Status == '普通', 'status-aqi3': info.Status == '對敏感族群不健康', 'status-aqi4': info.Status == '對所有族群不健康', 'status-aqi5': info.Status == '非常不健康', 'status-aqi6': info.Status == '危害'}">
                         <div class="card-header">{{info.County}} - {{ info.SiteName }}
-                            <a href="#" class="float-right starbtn" @click.prevent="starClick(info), chosen = !chosen" :class="{'active': chosen}">
+                            <a href="#" class="float-right starbtn" @click.prevent="starClick(info)" :class="{'active': info.chosen == true}">
                                 <i class="fas fa-star"></i>
                             </a>
                         </div>
@@ -171,11 +171,6 @@
 
                 <script>
                     Vue.component('card-component', {
-                        data: function () {
-                            return {
-                                chosen: false
-                            }
-                        },
                         props: ['info'],
                         template: '#cardComponentTemplate',
                         methods: {
@@ -197,20 +192,35 @@
                         },
 
                         created() {
+
+                            this.localStorageRecord();
                             this.getData();
                         },
 
                         methods: {
-                            getData() {
+                            getData: function () {
                                 const vm = this;
                                 const api = 'http://opendata2.epa.gov.tw/AQI.json';
                                 // 使用 jQuery ajax
                                 $.get(api).then(function (response) {
                                     vm.data = response;
 
+                                    const dataLen = vm.data.length;
+                                    const staredLen = vm.stared.length;
+                                    console.log(staredLen);
+
+                                    if (staredLen != 0) {
+                                        for (let i = 0; i < dataLen; i++) {
+                                            for (let j = 0; j < staredLen; j++) {
+                                                if (vm.data[i].SiteName == vm.stared[j].SiteName) {
+                                                    vm.data[i].chosen = true;
+                                                }
+                                            }
+                                        }
+                                    }
+
                                     // option選項:刪掉重複值，寫入location
-                                    const len = vm.data.length;
-                                    for (let i = 0; i < len; i++) {
+                                    for (let i = 0; i < dataLen; i++) {
                                         if (vm.location.indexOf(vm.data[i].County) == -1) {
                                             vm.location.push(vm.data[i].County);
                                         }
@@ -223,17 +233,55 @@
                                 const staredLength = vm.stared.length;
                                 let key = -1;
 
-                                for (let i = 0; i < staredLength; i++) {
-                                    if (vm.stared[i].SiteName == chooseCard.SiteName) {
-                                        key = i;
+                                if (staredLength == 0) {
+                                    key = -1;
+                                } else {
+                                    for (let i = 0; i < staredLength; i++) {
+                                        if (vm.stared[i].SiteName == chooseCard.SiteName) {
+                                            key = i;
+                                        }
                                     }
                                 }
 
                                 if (key == -1) {
                                     vm.stared.push(chooseCard);
+                                    vm.stared[staredLength].chosen = true;
+
+                                    const dataLen = vm.data.length;
+
+                                    for (let i = 0; i < dataLen; i++) {
+                                        if (vm.data[i].SiteName == chooseCard.SiteName) {
+                                            vm.data[i].chosen = true;
+                                        }
+                                    }
 
                                 } else {
                                     vm.stared.splice(key, 1);
+
+                                    const dataLen = vm.data.length;
+
+                                    for (let i = 0; i < dataLen; i++) {
+                                        if (vm.data[i].SiteName == chooseCard.SiteName) {
+                                            vm.data[i].chosen = false;
+                                        }
+                                    }
+                                }
+
+                                let staredString = JSON.stringify(vm.stared);
+                                localStorage.setItem('staredItem', staredString);
+                            },
+
+                            localStorageRecord: function () {
+                                const vm = this;
+
+                                let getStared = localStorage.getItem('staredItem');
+
+                                //如果localStorage不為空值，則寫入stared
+                                if (getStared) {
+                                    vm.stared = JSON.parse(getStared);
+
+                                    const dataLen = vm.data.length;
+                                    const staredLen = vm.stared.length;
                                 }
                             }
 
