@@ -241,11 +241,11 @@
                                 if (staredLength == 0) {
                                     key = -1;
                                 } else {
-                                    for (let i = 0; i < staredLength; i++) {
-                                        if (vm.stared[i].SiteName == chooseCard.SiteName) {
-                                            key = i;
+                                    key = vm.stared.indexOf(vm.stared.find(function (item, index) {
+                                        if (item.SiteName == chooseCard.SiteName) {
+                                            return true;
                                         }
-                                    }
+                                    }))
                                 }
 
                                 if (key == -1) { //如果沒有在stared中
@@ -255,6 +255,12 @@
                                     const dataLen = vm.data.length;
 
                                     for (let i = 0; i < dataLen; i++) {
+                                        // vm.stared.find(function (item, index) {
+                                        //     if (item.SiteName == chooseCard.SiteName) {
+                                        //         return true;
+                                        //     }
+                                        // })
+
                                         if (vm.data[i].SiteName == chooseCard.SiteName) {
                                             vm.$set(vm.data[i], 'chosen', true);
                                         }
