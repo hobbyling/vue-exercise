@@ -154,7 +154,7 @@
                 <script type="text/x-template" id="cardComponentTemplate">
                     <div class="card" :class="{'status-aqi2': info.Status == '普通', 'status-aqi3': info.Status == '對敏感族群不健康', 'status-aqi4': info.Status == '對所有族群不健康', 'status-aqi5': info.Status == '非常不健康', 'status-aqi6': info.Status == '危害'}">
                         <div class="card-header">{{info.County}} - {{ info.SiteName }}
-                            <a href="#" class="float-right starbtn" @click.prevent="starClick(info)" :class="{'active': info.chosen == true}">
+                            <a href="#" class="float-right starbtn" @click.prevent="starClick(info)" :class="{'active': info.chosen}">
                                 <i class="fas fa-star"></i>
                             </a>
                         </div>
@@ -206,7 +206,10 @@
 
                                     const dataLen = vm.data.length;
                                     const staredLen = vm.stared.length;
-                                    console.log(staredLen);
+
+                                    for (let i = 0; i < dataLen; i++) {
+                                        vm.$set(vm.data[i], 'chosen', false);
+                                    }
 
 
                                     //將data中，關注區域的chosen改為true
@@ -214,7 +217,7 @@
                                         for (let i = 0; i < dataLen; i++) {
                                             for (let j = 0; j < staredLen; j++) {
                                                 if (vm.data[i].SiteName == vm.stared[j].SiteName) {
-                                                    vm.data[i].chosen = true;
+                                                    vm.$set(vm.data[i], 'chosen', true);
                                                 }
                                             }
                                         }
@@ -227,12 +230,13 @@
                                         }
                                     }
                                 });
+                                console.log('method', this)
                             },
 
                             staredBtn: function (chooseCard) {
                                 const vm = this;
                                 const staredLength = vm.stared.length;
-                                let key = -1;
+                                var key = -1;
 
                                 if (staredLength == 0) {
                                     key = -1;
@@ -252,7 +256,7 @@
 
                                     for (let i = 0; i < dataLen; i++) {
                                         if (vm.data[i].SiteName == chooseCard.SiteName) {
-                                            vm.data[i].chosen = true;
+                                            vm.$set(vm.data[i], 'chosen', true);
                                         }
                                     }
                                 } else {  //如果已在stared中
@@ -262,7 +266,7 @@
 
                                     for (let i = 0; i < dataLen; i++) {
                                         if (vm.data[i].SiteName == chooseCard.SiteName) {
-                                            vm.data[i].chosen = false;
+                                            vm.$set(vm.data[i], 'chosen', false);
                                         }
                                     }
                                 }
@@ -304,6 +308,9 @@
                                     return newLocation;
                                 }
                             },
+                        },
+                        mounted: function () {
+                            console.log('Vue init:', this)
                         }
                     });
                 </script>
