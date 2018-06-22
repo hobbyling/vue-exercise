@@ -255,12 +255,6 @@
                                     const dataLen = vm.data.length;
 
                                     for (let i = 0; i < dataLen; i++) {
-                                        // vm.stared.find(function (item, index) {
-                                        //     if (item.SiteName == chooseCard.SiteName) {
-                                        //         return true;
-                                        //     }
-                                        // })
-
                                         if (vm.data[i].SiteName == chooseCard.SiteName) {
                                             vm.$set(vm.data[i], 'chosen', true);
                                         }
